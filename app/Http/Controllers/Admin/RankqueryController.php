@@ -55,10 +55,8 @@ class RankqueryController extends ApiController {
       $res = json_decode($output);
 
       if (isset($res->code) && $res->code == 1) {
-          return prompt(1, "任务添加成功！");
+          return $this->success('添加成功');
       }
-
-      return $this->success('添加成功');
     }
 
     return $this->failed('添加失败');
