@@ -28,12 +28,13 @@ class KeywordController extends ApiController {
     }
 
     $parent = $req->input('parent');
+    $project_type = $req->input('type'); // 云网客或seo
     $data = [];
     foreach ($keywords as $key => $value) {
-      $data[$key]['project_type'] = $req->input('type');
+      $data[$key]['project_type'] = $project_type;
       $data[$key]['parent'] = $parent;
       $data[$key]['Keyword'] = $value;
-      $data[$key]['hash'] = md5($parent . $value);
+      $data[$key]['hash'] = md5($value . $parent . $project_type);
     }
 
     $model = new Model;
@@ -67,6 +68,21 @@ class KeywordController extends ApiController {
         $value->first_rank_bd = $rank->rank;
         $value->save();
       }
+    }
+
+    if ($keyword->lastPage() != $keyword->currentPage()) {
+      echo '<meta http-equiv="Refresh" content="0; url='. $keyword->nextPageUrl() .'" />';
+    }
+
+  }
+
+  public function hash_update (Request $req) {
+    $pagesize = $req->input('pagesize', 1000);
+    $keyword = Model::paginate($pagesize);
+
+    foreach ($keyword as $key => $value) {
+      $value->hash = md5($value->keyword . $value->parent . $value->project_type);
+      $value->save();
     }
 
     if ($keyword->lastPage() != $keyword->currentPage()) {

@@ -31,6 +31,7 @@ Route::group(['namespace' => 'Admin'], function () {
   // 关键词
   Route::post('keyword/add', 'KeywordController@add');
   Route::get('keyword/first_rank_update', 'KeywordController@first_rank_update')->name('first_rank_update');
+  Route::get('keyword/hash_update', 'KeywordController@hash_update')->name('hash_update'); // 更新关键词hash值
   Route::post('keyword/rank_update', 'KeywordController@rank_update')->name('rank_update'); // 更新排名
   Route::get('keyword/query', 'KeywordController@query');
   Route::get('/keyword/export/{type}/{id}', "KeywordController@export"); // 导出excel

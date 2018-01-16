@@ -14,7 +14,7 @@ class AddFirstRankBdToKeyword extends Migration
     public function up()
     {
         Schema::table('keywords', function (Blueprint $table) {
-            $table->integer('first_rank_bd');
+            $table->integer('first_rank_bd')->default(0);
         });
     }
 
