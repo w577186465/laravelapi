@@ -206,7 +206,7 @@ class KeywordController extends ApiController {
     $rn = $top*10; // 前N条结果
 
     $first_table = 'first_rank_' . $site;
-    $words = Model::where($first_table, '<=', 10)->where($first_table, '>', 0)->orderBy($first_table, 'desc')->get();
+    $words = Model::where('parent', $pid)->where($first_table, '<=', 10)->where($first_table, '>', 0)->orderBy($first_table, 'desc')->get();
 
     $rows = array();
     $rows[] = array("前" .$rn. "页关键词排名情况");
