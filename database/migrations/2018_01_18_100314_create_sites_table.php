@@ -15,9 +15,9 @@ class CreateSitesTable extends Migration {
 			$table->increments('id');
 			$table->string('name')->index();
 			$table->string('domain')->index();
-			$table->string('admin_url')->default(null);
-			$table->string('admin_username')->default(null);
-			$table->string('admin_password')->default(null);
+			$table->string('admin_url')->nullable();
+			$table->string('admin_username')->nullable();
+			$table->string('admin_password')->nullable();
 			$table->timestamps();
 		});
 	}
