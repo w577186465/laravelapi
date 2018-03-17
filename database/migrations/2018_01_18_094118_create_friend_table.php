@@ -15,7 +15,6 @@ class CreateFriendTable extends Migration {
 			$table->increments('id');
 			$table->string('home_url');
 			$table->string('page_url');
-			$table->string('selector')->default('');
 			$table->string('secret')->index();
 			$table->integer('site_id')->index();
 			$table->integer('syncstatus')->index()->default(0); // 0未更新 1更新成功
