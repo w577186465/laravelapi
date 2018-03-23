@@ -18,6 +18,7 @@ class FriendController extends ApiController {
 
 	public function info($id) {
 		$data = Friend::find($id);
+		$data->server_uri = env("APP_URL");
 		return $this->success($data);
 	}
 
@@ -54,7 +55,7 @@ class FriendController extends ApiController {
 	}
 
 	public function edit(Request $req, $id) {
-		$form = $req->only(['home_url', 'site_id', 'selector', 'status', 'syncstatus']);
+		$form = $req->only(['home_url', 'site_id', 'status', 'syncstatus']);
 
 		// 重复判断
 		if (isset($form['home_url'])) {
