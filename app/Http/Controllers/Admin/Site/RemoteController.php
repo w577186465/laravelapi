@@ -14,7 +14,7 @@ class RemoteController extends ApiController {
 		$url = $friend->home_url . "/?action=code_test";
 		$res = $this->request($url, "get");
 
-		if (isset($res->status) && $res->status == 200) {
+		if (isset($res->code) && $res->code == 200) {
 			return $this->message("success");
 		}
 
@@ -34,7 +34,7 @@ class RemoteController extends ApiController {
 		$url = $friend->home_url . "/pmfriends/install/index.php";
 
 		$res = $this->request($url, "post", $form);
-		if (isset($res->status) && $res->code == 200) {
+		if (isset($res->code) && $res->code == 200) {
 			return $this->message("success");
 		}
 
@@ -46,7 +46,7 @@ class RemoteController extends ApiController {
 		$url = $friend->home_url . "/?action=config_get";
 		$res = $this->request($url, "get", "", $friend->secret);
 
-		if (isset($res->status) && $res->status == 200) {
+		if (isset($res->code) && $res->code == 200) {
 			return $this->success($res->data);
 		}
 
@@ -66,7 +66,7 @@ class RemoteController extends ApiController {
 		$form = json_encode(["id" => $id]);
 
 		$res = $this->request($url, "post", $form);
-		if (isset($res->status) && $res->status != 200) {
+		if (isset($res->code) && $res->code != 200) {
 			return $this->error($res);
 		}
 
@@ -98,7 +98,7 @@ class RemoteController extends ApiController {
 
 		// 同步站点
 		$res = $this->request($url, "post", $form, $secret);
-		if (isset($res->status) && $res->status != 200) {
+		if (isset($res->code) && $res->code != 200) {
 			return $this->error($res);
 		}
 
@@ -122,7 +122,7 @@ class RemoteController extends ApiController {
 
 		$res = $this->request($url, "post", $form, $secret);
 
-		if (isset($res->status) && $res->status != 200) {
+		if (isset($res->code) && $res->code != 200) {
 			return $this->error($res);
 		}
 
@@ -133,6 +133,25 @@ class RemoteController extends ApiController {
 		}
 
 		return $this->failed("发生未知错误，删除失败。");
+	}
+
+	public function style_set(Request $req, $id) {
+		if (!$req->filled(["style", "selector", "selectorPos"])) {
+			return $this->failed("参数不正确");
+		}
+
+		$friend = Friend::find($id);
+		$url = $friend->home_url . "/?action=config_edit";
+
+		$form = $req->only(["style", "selector", "selectorPos"]);
+		$formData = json_encode($form);
+
+		$res = $this->request($url, "post", $formData, $friend->secret);
+		if (isset($res->code) && $res->code == 200) {
+			return $this->message("success");
+		}
+
+		return $this->error($res);
 	}
 
 	private function error($res) {

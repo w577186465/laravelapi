@@ -58,7 +58,8 @@ Route::group(['namespace' => 'Admin'], function () {
 		Route::get('admin/website/friend_remote/delete/{id}', 'RemoteController@delete'); // 更改链接
 		Route::post('admin/website/friend_remote/install/{id}', 'RemoteController@install'); // 安装
 		Route::get('admin/website/friend_remote/test/{id}', 'RemoteController@test'); // 请求站点
-		Route::get('admin/website/friend_remote/config_get/{id}', 'RemoteController@config_get'); // 请求站点
+		Route::get('admin/website/friend_remote/config_get/{id}', 'RemoteController@config_get'); // 获取config
+		Route::post('admin/website/friend_remote/style_set/{id}', 'RemoteController@style_set'); // 请求站点
 	});
 
 	// 关键词
