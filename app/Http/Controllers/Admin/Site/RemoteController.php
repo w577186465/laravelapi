@@ -46,9 +46,7 @@ class RemoteController extends ApiController {
 		$url = $friend->home_url . "/?action=config_get";
 		$res = $this->request($url, "get", "", $friend->secret);
 
-		if (isset($res->code) && $res->code == 200) {
-			return $this->success($res->data);
-		} else {
+		if (!isset($res->code) || $res->code != 200) {
 			return $this->error($res);
 		}
 
