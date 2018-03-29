@@ -52,7 +52,7 @@ class RemoteController extends ApiController {
 			return $this->error($res);
 		}
 
-		$friend->status = 1
+		$friend->status = 1;
 		$save = $friend->save();
 
 		if ($save) {
