@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Task;
 
 use App\Http\Controllers\ApiController;
 use App\Http\Resources\RankqueryGettask;
-use App\RankQuery as Model;
+use App\WordTask;
 
 // 模型
 use App\Yunwangke;
 use Illuminate\Http\Request;
 
-class RankqueryController extends ApiController {
+class WordTaskController extends ApiController {
 
 	// 添加数据
 	public function add_task(Request $req) {
@@ -25,7 +25,7 @@ class RankqueryController extends ApiController {
 		$name = $ywk->custom->name;
 
 		// 保存
-		$model = new Model;
+		$model = new WordTask;
 		$model->pid = $req->input('id');
 		$model->name = $name;
 		$model->task_type = $req->input('task_type');
@@ -64,24 +64,24 @@ class RankqueryController extends ApiController {
 	}
 
 	public function delete($id) {
-		$partner = Model::destroy($id);
+		$partner = WordTask::destroy($id);
 		print_r($partner);
 	}
 
 	public function list(Request $req) {
 		$pagesize = $req->input('pagesize', 10);
 
-		$data = Model::orderBy('id', 'desc')->paginate($pagesize);
+		$data = WordTask::orderBy('id', 'desc')->paginate($pagesize);
 		return $this->success($data);
 	}
 
-	public function get_task_list() {
-		$tasks = Model::select('id', 'task_type')->where('state', '0')->orWhere('state', '1')->get();
+	public function rank() {
+		$tasks = WordTask::select('id', 'task_type')->where('state', '0')->orWhere('state', '1')->get();
 		return $this->success($tasks);
 	}
 
 	public function get_task($id) {
-		$task = Model::find($id);
+		$task = WordTask::find($id);
 		if ($task->task_type == 'ywk') {
 			$data = new RankqueryGettask(Yunwangke::find($task->pid));
 			$data->site = $task->site;

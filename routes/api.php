@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
  */
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
-	echo 'sdfsdf';
+	return $request->user();
 });
 
 // 后台需登录信息
@@ -72,11 +72,44 @@ Route::group(['namespace' => 'Admin'], function () {
 	Route::get('admin/keyword/query', 'KeywordController@query');
 	Route::get('admin/keyword/export/{type}/{id}', "KeywordController@export"); // 导出excel
 
-	// 自动查词
-	Route::post('rankquery/add_task', 'RankqueryController@add_task')->name('rankquery_add_task'); // 添加任务
-	Route::get('rankquery/list', 'RankqueryController@list')->name('rankquery_list'); // 任务列表
-	Route::get('rankquery/get_task/{id}', 'RankqueryController@get_task')->name('rankquery_get_task'); // 任务信息
-	Route::get('rankquery/get_task', 'RankqueryController@get_task_list')->name('rankquery_get_task_list'); // 任务列表
+	// 任务管理
+	Route::group(['namespace' => 'Task'], function () {
+		// 关键词任务
+		Route::get('admin/task/wordrank/list', 'WordTaskController@list')->name('admin_word_task_list'); // 任务列表
+		Route::post('admin/task/wordrank/add_task', 'WordTaskController@add_task')->name('admin_wordrank_task_add'); // 添加任务
+	});
+
+	// 小程序
+	Route::group(["namespace" => "Miniprograms"], function () {
+		Route::get('admin/miniprograms/list', 'ModulesController@list');
+		Route::post('admin/miniprograms/add', 'ModulesController@add'); // 添加小程序模块
+		Route::post('admin/miniprograms/edit/{id}', 'ModulesController@edit'); // 修改小程序模块
+		Route::get('admin/miniprograms/delete/{id}', 'ModulesController@delete'); // 删除小程序模块
+	});
+
+	// 案例
+	Route::group(['namespace' => 'Case'], function () {
+		// 小程序
+		Route::get('admin/cases/miniprograms', 'MiniprogramsController@list'); // 列表
+		Route::post('admin/cases/miniprograms/add', 'MiniprogramsController@add'); // 添加
+		Route::get('admin/cases/miniprograms/{id}', 'MiniprogramsController@single'); // 详情
+		Route::post('admin/cases/miniprograms/update/{id}', 'MiniprogramsController@update'); // 修改
+	});
+});
+
+// 开放接口
+Route::middleware([])->group(function () {
+	// 云网客
+	Route::group(['namespace' => 'Admin\Yunwangke'], function () {
+		Route::get('yunwangke/partner/all', 'PartnerController@all'); // 获取所有合作网站域名
+	});
+
+	// 任务
+	Route::group(['namespace' => 'Task'], function () {
+		// 关键词任务
+		Route::get('task/wordrank/rank', 'WordTaskController@rank')->name('word_task_rank'); //
+		Route::get('task/wordrank/{id}', 'WordTaskController@task')->name('word_task_info'); // 任务信息
+	});
 });
 
 // Route::group(['namespace' => 'Admin\Miniprograms', 'middleware' => 'auth:api'], function () {
@@ -103,7 +136,6 @@ Route::group(['namespace' => 'Admin\Yunwangke'], function () {
 	Route::get('admin/yunwangke/partner/list', 'PartnerController@list');
 	Route::post('admin/yunwangke/partner/add', 'PartnerController@add');
 	Route::post('admin/yunwangke/partner/delete/{id}', 'PartnerController@delete');
-	Route::get('admin/yunwangke/partner/all', 'PartnerController@all'); // 获取所有合作网站域名
 });
 
 // 后台不需登录信息

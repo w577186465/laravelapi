@@ -6,8 +6,6 @@ use App\Http\Controllers\ApiController;
 use App\YunwangkePartner as Model;
 use Illuminate\Http\Request;
 
-// 模型
-
 class PartnerController extends ApiController {
 
 	// 添加数据

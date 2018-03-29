@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class RankQuery extends Model {
+class WordTask extends Model {
 
 	public function keywords() {
 		return $this->hasMany('App\Keyword', 'parent', 'pid');

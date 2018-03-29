@@ -48,9 +48,18 @@ class RemoteController extends ApiController {
 
 		if (isset($res->code) && $res->code == 200) {
 			return $this->success($res->data);
+		} else {
+			return $this->error($res);
 		}
 
-		return $this->error($res);
+		$friend->status = 1
+		$save = $friend->save();
+
+		if ($save) {
+			return $this->message("success");
+		}
+
+		return $this->failed("发生未知错误");
 	}
 
 	public function sync(Request $req) {
