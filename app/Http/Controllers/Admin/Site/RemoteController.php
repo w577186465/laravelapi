@@ -54,7 +54,7 @@ class RemoteController extends ApiController {
 		$save = $friend->save();
 
 		if ($save) {
-			return $this->message("success");
+			return $this->success($res->data);
 		}
 
 		return $this->failed("发生未知错误");
