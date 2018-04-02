@@ -26,7 +26,7 @@ class RemoteController extends ApiController {
 			return $this->failed("参数不正确");
 		}
 
-		$data = $req->only(["appid", "page_url", "home_url", "server_uri", "secret", "cache_time"]);
+		$data = $req->only(["appid", "page_url", "home_url", "server_uri", "secret", "cache_time", "coding"]);
 		$form = json_encode($data);
 
 		// 项目信息
