@@ -26,7 +26,7 @@ class RemoteController extends ApiController {
 			return $this->failed("参数不正确");
 		}
 
-		$data = $req->only(["appid", "page_url", "home_url", "server_uri", "secret"]);
+		$data = $req->only(["appid", "page_url", "home_url", "server_uri", "secret", "cache_time"]);
 		$form = json_encode($data);
 
 		// 项目信息
@@ -143,14 +143,14 @@ class RemoteController extends ApiController {
 	}
 
 	public function style_set(Request $req, $id) {
-		if (!$req->filled(["style", "selector", "selectorPos"])) {
+		if (!$req->filled(["selector", "selectorPos"])) {
 			return $this->failed("参数不正确");
 		}
 
 		$friend = Friend::find($id);
 		$url = $friend->home_url . "/?action=config_edit";
 
-		$form = $req->only(["style", "selector", "selectorPos"]);
+		$form = $req->only(["style", "template", "selector", "selectorPos"]);
 		$formData = json_encode($form);
 
 		$res = $this->request($url, "post", $formData, $friend->secret);

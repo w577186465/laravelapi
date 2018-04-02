@@ -48,6 +48,7 @@ Route::group(['namespace' => 'Admin'], function () {
 		Route::get('admin/website/friend_link/list/{id}', 'FriendLinkController@list')->name('friend_link_list'); // 友情链接列表
 		Route::get('admin/website/friend_link/info/{id}', 'FriendLinkController@info')->name('friend_link_info');
 		Route::post('admin/website/friend_link/add', 'FriendLinkController@add')->name('friend_link_add');
+		Route::post('admin/website/friend_link/add_multiple', 'FriendLinkController@add_multiple')->name('friend_link_add_multiple');
 		Route::post('admin/website/friend_link/edit/{id}', 'FriendLinkController@edit')->name('friend_link_edit');
 		Route::post('admin/website/friend_link/sync_success', 'FriendLinkController@sync_success')->name('friend_link_sync_success');
 		Route::get('admin/website/friend_link/delete/{id}', 'FriendLinkController@delete')->name('friend_link_delete');
