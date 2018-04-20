@@ -96,10 +96,6 @@ Route::middleware([])->group(function () {
 
 	// 任务
 	Route::group(['namespace' => 'Task'], function () {
-		// 关键词任务
-		Route::get('task/wordrank/add_task', 'WordTaskController@add_task')->name('admin_wordrank_task_add'); // 添加任务
-
-		// 工具接口
 		Route::get('tool/task/wordrank/rank', 'WordTaskController@rank')->name('word_task_rank'); // 获取进行中的任务
 		Route::get('tool/task/wordrank/data/{id}', 'WordTaskController@get_task_data')->name('word_task_data'); // 获取任务关键词
 		Route::post('tool/task/wordrank/saverank', 'WordTaskController@save_rank')->name('word_task_save_rank'); // 获取任务关键词
@@ -133,22 +129,29 @@ Route::group([], function () {
 	Route::get('keyword/export/{type}/{id}', "KeywordController@export"); // 导出excel
 });
 
-// 云网客
-Route::group(['namespace' => 'Yunwangke'], function () {
-	// 项目
-	Route::post('yunwangke/add', 'ProjectController@add')->name('yunwangke-project-add'); // 添加项目
-	Route::post('yunwangke/edit', 'ProjectController@edit')->name('yunwangke-project-edit'); // 修改项目
-	Route::get('yunwangke/delete/{id}', 'ProjectController@del')->name('yunwangke-project-delete'); // 删除项目
-	Route::get('yunwangke', 'ProjectController@index')->name('yunwangke-project-index'); // 项目列表
-	Route::get('yunwangke/list', 'ProjectController@list')->name('yunwangke-project-list'); // 项目列表
-	Route::get('yunwangke/info/{id}', 'ProjectController@info')->name('yunwangke-project-info'); // 项目信息
-	Route::get('yunwangke/single/{id}', 'ProjectController@single')->name('yunwangke-project-single'); // 项目详情页
+Route::group([], function () {
+	// 云网客
+	Route::group(['namespace' => 'Yunwangke'], function () {
+		// 项目
+		Route::post('yunwangke/add', 'ProjectController@add')->name('yunwangke-project-add'); // 添加项目
+		Route::post('yunwangke/edit', 'ProjectController@edit')->name('yunwangke-project-edit'); // 修改项目
+		Route::get('yunwangke/delete/{id}', 'ProjectController@del')->name('yunwangke-project-delete'); // 删除项目
+		Route::get('yunwangke', 'ProjectController@index')->name('yunwangke-project-index'); // 项目列表
+		Route::get('yunwangke/list', 'ProjectController@list')->name('yunwangke-project-list'); // 项目列表
+		Route::get('yunwangke/info/{id}', 'ProjectController@info')->name('yunwangke-project-info'); // 项目信息
+		Route::get('yunwangke/single/{id}', 'ProjectController@single')->name('yunwangke-project-single'); // 项目详情页
 
-	// 合作网站
-	Route::get('yunwangke/partner/list', 'PartnerController@list')->name('yunwangke-partner-list'); // 合作网站列表
-	Route::post('yunwangke/partner/add', 'PartnerController@add')->name('yunwangke-partner-add'); // 添加合作网站
-	Route::post('yunwangke/partner/edit/{id}', 'PartnerController@edit')->name('yunwangke-partner-edit'); // 修改合作网站
-	Route::get('yunwangke/partner/delete/{id}', 'PartnerController@delete')->name('yunwangke-partner-delete'); //
+		// 合作网站
+		Route::get('yunwangke/partner/list', 'PartnerController@list')->name('yunwangke-partner-list'); // 合作网站列表
+		Route::post('yunwangke/partner/add', 'PartnerController@add')->name('yunwangke-partner-add'); // 添加合作网站
+		Route::post('yunwangke/partner/edit/{id}', 'PartnerController@edit')->name('yunwangke-partner-edit'); // 修改合作网站
+		Route::get('yunwangke/partner/delete/{id}', 'PartnerController@delete')->name('yunwangke-partner-delete'); //
+	});
+
+	// 任务
+	Route::group(['namespace' => 'Task'], function () {
+		Route::post('task/wordrank/add_task', 'WordTaskController@add_task')->name('admin_wordrank_task_add'); // 添加任务
+	});
 });
 
 // 后台不需登录信息

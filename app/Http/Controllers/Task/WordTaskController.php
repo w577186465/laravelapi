@@ -44,7 +44,7 @@ class WordTaskController extends ApiController {
 		$model->query_range = $req->input('query_range', 5);
 
 		// 重点词
-		$important = !!$req->input('important', true);
+		$important = $req->input('important', 1);
 		$model->important = $important;
 
 		$res = $model->save();
