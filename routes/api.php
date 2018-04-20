@@ -25,9 +25,9 @@ Route::group(['namespace' => 'Admin'], function () {
 	Route::post('industry/update/{id}', 'IndustryController@update'); // 修改行业
 
 	// 客户
-	Route::post('admin/custom/add', 'CustomController@add'); // 修改案例
-	Route::get('admin/custom/list', 'CustomController@list'); // 修改案例
-	Route::get('admin/custom/all', 'CustomController@all'); // 搜索
+	Route::post('custom/add', 'CustomController@add'); // 修改案例
+	Route::get('custom/list', 'CustomController@list'); // 修改案例
+	Route::get('custom/all', 'CustomController@all'); // 搜索
 
 	// 站点
 	Route::group(['namespace' => 'Site'], function () {
@@ -63,21 +63,10 @@ Route::group(['namespace' => 'Admin'], function () {
 		Route::post('admin/website/friend_remote/style_set/{id}', 'RemoteController@style_set'); // 请求站点
 	});
 
-	// 关键词
-	Route::post('admin/keyword/add', 'KeywordController@add');
-	Route::post('admin/keyword/edit', 'KeywordController@edit');
-	Route::get('admin/keyword/delete/{id}', 'KeywordController@delete');
-	Route::get('admin/keyword/first_rank_update', 'KeywordController@first_rank_update')->name('first_rank_update');
-	Route::get('admin/keyword/hash_update', 'KeywordController@hash_update')->name('hash_update'); // 更新关键词hash值
-	Route::post('admin/keyword/rank_update', 'KeywordController@rank_update')->name('rank_update'); // 更新排名
-	Route::get('admin/keyword/query', 'KeywordController@query');
-	Route::get('admin/keyword/export/{type}/{id}', "KeywordController@export"); // 导出excel
-
 	// 任务管理
 	Route::group(['namespace' => 'Task'], function () {
 		// 关键词任务
 		Route::get('admin/task/wordrank/list', 'WordTaskController@list')->name('admin_word_task_list'); // 任务列表
-		Route::post('admin/task/wordrank/add_task', 'WordTaskController@add_task')->name('admin_wordrank_task_add'); // 添加任务
 	});
 
 	// 小程序
@@ -98,18 +87,23 @@ Route::group(['namespace' => 'Admin'], function () {
 	});
 });
 
-// 开放接口
+// 工具接口
 Route::middleware([])->group(function () {
 	// 云网客
-	Route::group(['namespace' => 'Admin\Yunwangke'], function () {
-		Route::get('yunwangke/partner/all', 'PartnerController@all'); // 获取所有合作网站域名
+	Route::group(['namespace' => 'Yunwangke'], function () {
+		Route::get('tool/yunwangke/partner/all', 'PartnerController@all'); // 获取所有合作网站域名
 	});
 
 	// 任务
 	Route::group(['namespace' => 'Task'], function () {
 		// 关键词任务
-		Route::get('task/wordrank/rank', 'WordTaskController@rank')->name('word_task_rank'); //
-		Route::get('task/wordrank/{id}', 'WordTaskController@task')->name('word_task_info'); // 任务信息
+		Route::get('task/wordrank/add_task', 'WordTaskController@add_task')->name('admin_wordrank_task_add'); // 添加任务
+
+		// 工具接口
+		Route::get('tool/task/wordrank/rank', 'WordTaskController@rank')->name('word_task_rank'); // 获取进行中的任务
+		Route::get('tool/task/wordrank/data/{id}', 'WordTaskController@get_task_data')->name('word_task_data'); // 获取任务关键词
+		Route::post('tool/task/wordrank/saverank', 'WordTaskController@save_rank')->name('word_task_save_rank'); // 获取任务关键词
+		Route::get('tool/task/wordrank/task_state/{id}', 'WordTaskController@task_state')->name('word_set_task_state'); // 任务完成更新状态
 	});
 });
 
@@ -127,16 +121,34 @@ Route::group(['namespace' => 'Admin\Miniprograms'], function () {
 	Route::post('miniprograms/cases/update/{id}', 'CasesController@update'); // 修改案例
 });
 
+// 关键词
+Route::group([], function () {
+	Route::post('keyword/add', 'KeywordController@add');
+	Route::post('keyword/edit', 'KeywordController@edit');
+	Route::get('keyword/delete/{id}', 'KeywordController@delete');
+	Route::get('keyword/first_rank_update', 'KeywordController@first_rank_update')->name('first_rank_update');
+	Route::get('keyword/hash_update', 'KeywordController@hash_update')->name('hash_update'); // 更新关键词hash值
+	Route::post('keyword/rank_update', 'KeywordController@rank_update')->name('rank_update'); // 更新排名
+	Route::get('keyword/query', 'KeywordController@query');
+	Route::get('keyword/export/{type}/{id}', "KeywordController@export"); // 导出excel
+});
+
 // 云网客
-Route::group(['namespace' => 'Admin\Yunwangke'], function () {
-	Route::post('admin/yunwangke/add', 'ProjectController@add');
-	Route::post('admin/yunwangke/edit', 'ProjectController@edit');
-	Route::get('admin/yunwangke/list', 'ProjectController@list');
-	Route::get('admin/yunwangke/delete/{id}', 'ProjectController@del');
-	Route::get('admin/yunwangke/single/{id}', 'ProjectController@single');
-	Route::get('admin/yunwangke/partner/list', 'PartnerController@list');
-	Route::post('admin/yunwangke/partner/add', 'PartnerController@add');
-	Route::post('admin/yunwangke/partner/delete/{id}', 'PartnerController@delete');
+Route::group(['namespace' => 'Yunwangke'], function () {
+	// 项目
+	Route::post('yunwangke/add', 'ProjectController@add')->name('yunwangke-project-add'); // 添加项目
+	Route::post('yunwangke/edit', 'ProjectController@edit')->name('yunwangke-project-edit'); // 修改项目
+	Route::get('yunwangke/delete/{id}', 'ProjectController@del')->name('yunwangke-project-delete'); // 删除项目
+	Route::get('yunwangke', 'ProjectController@index')->name('yunwangke-project-index'); // 项目列表
+	Route::get('yunwangke/list', 'ProjectController@list')->name('yunwangke-project-list'); // 项目列表
+	Route::get('yunwangke/info/{id}', 'ProjectController@info')->name('yunwangke-project-info'); // 项目信息
+	Route::get('yunwangke/single/{id}', 'ProjectController@single')->name('yunwangke-project-single'); // 项目详情页
+
+	// 合作网站
+	Route::get('yunwangke/partner/list', 'PartnerController@list')->name('yunwangke-partner-list'); // 合作网站列表
+	Route::post('yunwangke/partner/add', 'PartnerController@add')->name('yunwangke-partner-add'); // 添加合作网站
+	Route::post('yunwangke/partner/edit/{id}', 'PartnerController@edit')->name('yunwangke-partner-edit'); // 修改合作网站
+	Route::get('yunwangke/partner/delete/{id}', 'PartnerController@delete')->name('yunwangke-partner-delete'); //
 });
 
 // 后台不需登录信息
@@ -146,8 +158,8 @@ Route::group(['namespace' => 'Admin'], function () {
 	Route::get('miniprograms', 'Miniprograms\ModulesController@list');
 	Route::get('miniprograms/selects', 'Miniprograms\ModulesController@selects');
 	Route::get('miniprograms/{id}', 'Miniprograms\ModulesController@single'); // 获取单个应用数据
-	Route::get('admin/industry', 'IndustryController@all'); // 获取全部行业
-	Route::get('admin/industry/del/{id}', 'IndustryController@del'); // 获取全部行业
+	Route::get('industry', 'IndustryController@all'); // 获取全部行业
+	Route::get('industry/del/{id}', 'IndustryController@del'); // 获取全部行业
 });
 
 Route::middleware('auth:api')->post('upload', 'FilesystemController@upload');

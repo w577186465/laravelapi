@@ -14,9 +14,7 @@ class WordTaskController extends ApiController {
 
 	// 添加数据
 	public function add_task(Request $req) {
-		print_r($req->input('name', '滚'));
-		return;
-		if (!$req->filled('id') || !$req->filled('task_type') || !$req->filled('site')) {
+		if (!$req->filled('id') || !$req->filled('task_type')) {
 			return $this->failed('请正确填写信息');
 		}
 
@@ -29,36 +27,52 @@ class WordTaskController extends ApiController {
 		$model->pid = $req->input('id');
 		$model->name = $name;
 		$model->task_type = $req->input('task_type');
-		$model->site = $req->input('site');
 		$model->state = 0;
+
+		// 查询站点
+		if ($req->filled('site')) {
+			$model->site = implode(",", $req->input("site"));
+		}
+
+		// 查询范围
+		if ($req->filled('range')) {
+			$model->query_range = $req->input('range');
+		}
+
+		// 重点词
+		if ($req->filled('important')) {
+
+		}
 
 		$res = $model->save();
 
-		if (!$res) {
-			return $this->failed('保存失败');
+		if ($res) {
+			return $this->message("保存成功");
 		}
 
-		if ($model->id) {
-			$taskurl = sprintf("%s/addtask?id=%u", env('CONSOLE_PATH', 'http://127.0.0.1:3000'), $model->id); // 任务提交地址
+		return $this->failed("保存失败");
 
-			$ch = curl_init();
+		// if ($model->id) {
+		// 	$taskurl = sprintf("%s/addtask?id=%u", env('CONSOLE_PATH', 'http://127.0.0.1:3000'), $model->id); // 任务提交地址
 
-			// 设置选项，包括URL
-			curl_setopt($ch, CURLOPT_URL, $taskurl);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($ch, CURLOPT_HEADER, 0);
+		// 	$ch = curl_init();
 
-			// 执行并获取HTML文档内容
-			$output = curl_exec($ch);
+		// 	// 设置选项，包括URL
+		// 	curl_setopt($ch, CURLOPT_URL, $taskurl);
+		// 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		// 	curl_setopt($ch, CURLOPT_HEADER, 0);
 
-			//释放curl句柄
-			curl_close($ch);
-			$res = json_decode($output);
+		// 	// 执行并获取HTML文档内容
+		// 	$output = curl_exec($ch);
 
-			if (isset($res->code) && $res->code == 1) {
-				return $this->success('添加成功');
-			}
-		}
+		// 	//释放curl句柄
+		// 	curl_close($ch);
+		// 	$res = json_decode($output);
+
+		// 	if (isset($res->code) && $res->code == 1) {
+		// 		return $this->success('添加成功');
+		// 	}
+		// }
 
 		return $this->failed('添加失败');
 	}
@@ -75,6 +89,7 @@ class WordTaskController extends ApiController {
 		return $this->success($data);
 	}
 
+	// 获取进行中的列队
 	public function rank() {
 		$tasks = WordTask::select('id', 'task_type')->where('state', '0')->orWhere('state', '1')->get();
 		return $this->success($tasks);

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\ApiController;
 use App\Keyword;
@@ -24,22 +24,33 @@ class KeywordController extends ApiController {
 		$parent = $req->input('parent');
 		$project_type = $req->input('type'); // 云网客或seo
 
-		$data = [];
+		$failed = [
+			"total" => 0,
+			"failed" => [],
+		];
 		foreach ($keywords as $key => $value) {
-			$data[$key]['project_type'] = $project_type;
-			$data[$key]['parent'] = $parent;
-			$data[$key]['Keyword'] = $value;
-			$data[$key]['hash'] = md5($value . $parent . $project_type);
+			$data = [
+				"project_type" => $project_type,
+				"parent" => $parent,
+				"Keyword" => $value,
+				"hash" => md5($value . $parent . $project_type),
+			];
+			$keyword = Keyword::firstOrNew($data);
+			print_r($keyword);
+			// $model = new Keyword;
+			// $model->project_type = $project_type;
+			// $model->parent = $parent;
+			// $model->Keyword = $value;
+			// $model->hash = md5($value . $parent . $project_type);
+			// $res = $model->save();
+			// print_r($res);
+			// if !$res {
+			// 	$data["total"]++;
+			// 	$data["success"][] = $model->Keyword;
+			// }
 		}
 
-		$model = new Keyword;
-		$res = $model->insert($data);
-		print_r($res);
-		if ($res) {
-			return $this->success('添加成功');
-		}
-
-		return $this->failed('添加失败');
+		return $this->success($data);
 	}
 
 	public function edit(Request $req) {

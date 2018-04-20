@@ -48,8 +48,4 @@ class PartnerController extends ApiController {
 		return $this->success($data);
 	}
 
-	public function all() {
-		return Model::select('id', 'domain')->get();
-	}
-
 }

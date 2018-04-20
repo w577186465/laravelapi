@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateWordTaskTable extends Migration {
+class CreateWordTasksTable extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -17,7 +17,7 @@ class CreateWordTaskTable extends Migration {
 			$table->string('task_type'); // 云网客或seo
 			$table->integer('pid'); // 所属项目
 			$table->integer('state');
-			$table->string('site');
+			$table->string('site')->nullable();
 			$table->timestamps();
 		});
 	}
