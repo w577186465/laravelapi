@@ -133,7 +133,6 @@ Route::group([], function () {
 	// 云网客
 	Route::group(['namespace' => 'Yunwangke'], function () {
 		// 项目
-		Route::get('yunwangke/update', 'ProjectController@update')->name('yunwangke-project-update'); // 添加项目
 		Route::post('yunwangke/add', 'ProjectController@add')->name('yunwangke-project-add'); // 添加项目
 		Route::post('yunwangke/edit', 'ProjectController@edit')->name('yunwangke-project-edit'); // 修改项目
 		Route::get('yunwangke/delete/{id}', 'ProjectController@del')->name('yunwangke-project-delete'); // 删除项目
