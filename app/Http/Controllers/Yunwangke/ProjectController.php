@@ -10,6 +10,14 @@ use App\Yunwangke as Model;
 use Illuminate\Http\Request;
 
 class ProjectController extends ApiController {
+	public function update() {
+		$data = Model::with('custom')->get();
+		foreach ($data as $key => $value) {
+			$m = Model::find($value->id);
+			$m->name = $value->custom->name;
+			$m->save();
+		}
+	}
 
 	// 添加数据
 	public function add(Request $req) {
