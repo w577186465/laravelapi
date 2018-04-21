@@ -148,10 +148,13 @@ class WordTaskController extends ApiController {
 			"failed" => -1, // 失败
 			"waiting" => 0, // 列队中
 			"doing" => 1, // 进行中
-			"ok" => 11, // 完成
+			"success" => 11, // 完成
 		];
 
 		$stateName = $req->input("state");
+		if (!isset($stateData[$stateName])) {
+			return $this->failed("无效状态");
+		}
 
 		$task = WordTask::find($id);
 		$task->state = $stateData[$stateName];
