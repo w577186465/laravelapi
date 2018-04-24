@@ -89,6 +89,11 @@ class ProjectController extends ApiController {
 	}
 
 	public function del($id) {
+		$res = Keyword::where('parent', $id)->delete();
+		if (!$res) {
+			return $this->failed('发生未知错误，删除失败。');
+		}
+
 		$res = Model::destroy($id);
 		if ($res) {
 			return $this->message('success');
@@ -98,11 +103,25 @@ class ProjectController extends ApiController {
 
 	public function single(Request $req, $id) {
 		$pagesize = $req->input('pagesize', 10);
-		$queryword = $req->input('query', false);
-		$keywords = Keyword::with('ranks')->where('parent', $id)->where(function ($query) use ($req, $queryword) {
-			$site = $req->input('site');
+		$queryword = $req->input('query', false); // 搜索关键词
+		$site = $req->input('site'); // 筛选站点
+		$rank_column = 'first_rank_' . $site; // 排名列名
+
+		// 排序
+		$orderData = [
+			'id' => 'id',
+			'rank' => $rank_column,
+		];
+		$orderName = $req->input('orderby', 'id'); // 排序字段
+		$order = $req->input('order', 'desc');
+		$orderColumn = $orderData[$orderName];
+		if (!array_key_exists($orderName, $orderData)) {
+			$orderName = 'id';
+			$order = 'desc';
+		}
+
+		$keywords = Keyword::with('ranks')->where('parent', $id)->where(function ($query) use ($req, $queryword, $rank_column) {
 			$rank = $req->input('rank', 'all');
-			$rank_column = 'first_rank_' . $site;
 
 			if ($queryword) {
 				$queryword = '%' . $queryword . '%';
@@ -120,7 +139,10 @@ class ProjectController extends ApiController {
 			if ($rank == 'b50') {
 				$query->where($rank_column, 0);
 			}
-		})->paginate($pagesize);
+		})
+			->orderBy('heart', 'desc')
+			->orderBy($orderColumn, $order)
+			->paginate($pagesize);
 
 		return $this->success($keywords);
 	}

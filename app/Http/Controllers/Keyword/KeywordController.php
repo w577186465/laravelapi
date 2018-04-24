@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Keyword;
 
 use App\Http\Controllers\ApiController;
 use App\Keyword;
@@ -24,33 +24,43 @@ class KeywordController extends ApiController {
 		$parent = $req->input('parent');
 		$project_type = $req->input('type'); // 云网客或seo
 
-		$failed = [
-			"total" => 0,
-			"failed" => [],
-		];
+		//
+		$hashs = [];
 		foreach ($keywords as $key => $value) {
+			$hash = md5($value . $parent . $project_type);
+			$hashs[$key] = $hash;
+		}
+
+		$has = Keyword::whereIn("hash", $hashs)->select("keyword")->get()->toArray(); // 查询重复关键词
+		$failed = [
+			"total" => count($has),
+			"failed" => $has,
+		];
+
+		foreach ($keywords as $key => $value) {
+			if (in_array(['keyword' => $value], $has)) {
+				continue;
+			}
 			$data = [
 				"project_type" => $project_type,
 				"parent" => $parent,
 				"Keyword" => $value,
 				"hash" => md5($value . $parent . $project_type),
 			];
-			$keyword = Keyword::firstOrNew($data);
-			print_r($keyword);
-			// $model = new Keyword;
-			// $model->project_type = $project_type;
-			// $model->parent = $parent;
-			// $model->Keyword = $value;
-			// $model->hash = md5($value . $parent . $project_type);
-			// $res = $model->save();
-			// print_r($res);
-			// if !$res {
-			// 	$data["total"]++;
-			// 	$data["success"][] = $model->Keyword;
-			// }
+
+			$model = new Keyword;
+			$model->project_type = $project_type;
+			$model->parent = $parent;
+			$model->Keyword = $value;
+			$model->hash = $hashs[$key];
+			$res = $model->save();
+			if ($res != 1) {
+				$failed["total"]++;
+				$failed["failed"][] = $model->Keyword;
+			}
 		}
 
-		return $this->success($data);
+		return $this->success($failed);
 	}
 
 	public function edit(Request $req) {
@@ -60,7 +70,7 @@ class KeywordController extends ApiController {
 		$id = $req->input("id");
 		$keyword = Keyword::find($id);
 
-		$form = $req->only(["keyword", "project_type", "parent", "heart"]);
+		$form = $req->only(["heart"]);
 		foreach ($form as $key => $value) {
 			$keyword->$key = $value;
 		}
@@ -146,6 +156,12 @@ class KeywordController extends ApiController {
 		$data = Keyword::where($where)->paginate($pagesize);
 
 		return $this->success($data);
+	}
+
+	// 关键词排名情况
+	public function ranks($id) {
+		$keyword = Keyword::find($id);
+		return $this->success($keyword->ranks);
 	}
 
 	public function rank_update(Request $req) {

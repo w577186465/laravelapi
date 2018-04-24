@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Site;
+namespace App\Http\Controllers\Site;
 
 use App\Friend;
 use App\FriendLink;

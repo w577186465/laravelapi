@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Site;
+namespace App\Http\Controllers\Site;
 
+use App\Friend;
 use App\Http\Controllers\ApiController;
 use App\Site;
 use Illuminate\Http\Request;
@@ -79,6 +80,11 @@ class SiteController extends ApiController {
 	}
 
 	public function del($id) {
+		$res = Friend::where("site_id", $id)->delete();
+		if (!$res) {
+			return $this->failed('发生未知错误，删除失败。');
+		}
+
 		$res = Site::destroy($id);
 		if ($res) {
 			return $this->message('success');

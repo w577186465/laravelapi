@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Site;
+namespace App\Http\Controllers\Site;
 
 use App\Friend;
 use App\FriendLink;
@@ -28,10 +28,10 @@ class FriendController extends ApiController {
 	}
 
 	public function add(Request $req) {
-		if (!$req->filled(['home_url', 'page_url', 'site_id'])) {
+		if (!$req->filled(['name', 'home_url', 'page_url', 'site_id'])) {
 			return $this->failed('网站首页、所属站点为必填项');
 		}
-		$form = $req->only(['home_url', 'site_id', 'page_url']);
+		$form = $req->only(['name', 'home_url', 'site_id', 'page_url']);
 
 		// 重复判断
 		$has_site = Friend::where('home_url', $form['home_url'])->count();
@@ -40,6 +40,7 @@ class FriendController extends ApiController {
 		}
 
 		$model = new Friend;
+		$model->name = $form['name'];
 		$model->home_url = $form['home_url'];
 		$model->page_url = $form['page_url'];
 		$model->site_id = $form['site_id'];
@@ -55,7 +56,7 @@ class FriendController extends ApiController {
 	}
 
 	public function edit(Request $req, $id) {
-		$form = $req->only(['home_url', 'site_id', 'status', 'syncstatus']);
+		$form = $req->only(['name', 'home_url', 'site_id', 'status', 'syncstatus']);
 
 		// 重复判断
 		if (isset($form['home_url'])) {

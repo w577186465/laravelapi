@@ -29,40 +29,6 @@ Route::group(['namespace' => 'Admin'], function () {
 	Route::get('custom/list', 'CustomController@list'); // 修改案例
 	Route::get('custom/all', 'CustomController@all'); // 搜索
 
-	// 站点
-	Route::group(['namespace' => 'Site'], function () {
-		Route::get('admin/website', 'SiteController@index');
-		Route::get('admin/website/all', 'SiteController@all');
-		Route::post('admin/website/add', 'SiteController@add');
-		Route::post('admin/website/edit', 'SiteController@edit');
-		Route::get('admin/website/delete/{id}', 'SiteController@del');
-
-		// 友情链接 项目
-		Route::get('admin/website/friend', 'FriendController@friend');
-		Route::post('admin/website/friend/add', 'FriendController@add');
-		Route::post('admin/website/friend/edit/{id}', 'FriendController@edit');
-		Route::get('admin/website/friend/delete/{id}', 'FriendController@delete');
-		Route::get('admin/website/friend/info/{id}', 'FriendController@info');
-
-		// 友情链接 链接
-		Route::get('admin/website/friend_link/list/{id}', 'FriendLinkController@list')->name('friend_link_list'); // 友情链接列表
-		Route::get('admin/website/friend_link/info/{id}', 'FriendLinkController@info')->name('friend_link_info');
-		Route::post('admin/website/friend_link/add', 'FriendLinkController@add')->name('friend_link_add');
-		Route::post('admin/website/friend_link/add_multiple', 'FriendLinkController@add_multiple')->name('friend_link_add_multiple');
-		Route::post('admin/website/friend_link/edit/{id}', 'FriendLinkController@edit')->name('friend_link_edit');
-		Route::post('admin/website/friend_link/sync_success', 'FriendLinkController@sync_success')->name('friend_link_sync_success');
-		Route::get('admin/website/friend_link/delete/{id}', 'FriendLinkController@delete')->name('friend_link_delete');
-
-		// 友情链接 同步
-		Route::post('admin/website/friend_remote/sync', 'RemoteController@sync'); // 同步所有
-		Route::post('admin/website/friend_remote/update', 'RemoteController@update'); // 更改链接
-		Route::get('admin/website/friend_remote/delete/{id}', 'RemoteController@delete'); // 更改链接
-		Route::post('admin/website/friend_remote/install/{id}', 'RemoteController@install'); // 安装
-		Route::get('admin/website/friend_remote/test/{id}', 'RemoteController@test'); // 请求站点
-		Route::get('admin/website/friend_remote/config_get/{id}', 'RemoteController@config_get'); // 获取config
-		Route::post('admin/website/friend_remote/style_set/{id}', 'RemoteController@style_set'); // 请求站点
-	});
-
 	// 任务管理
 	Route::group(['namespace' => 'Task'], function () {
 		// 关键词任务
@@ -117,19 +83,26 @@ Route::group(['namespace' => 'Admin\Miniprograms'], function () {
 	Route::post('miniprograms/cases/update/{id}', 'CasesController@update'); // 修改案例
 });
 
-// 关键词
+// 后台
+// Route::group(['middleware' => 'auth:api'], function () {
 Route::group([], function () {
-	Route::post('keyword/add', 'KeywordController@add');
-	Route::post('keyword/edit', 'KeywordController@edit');
-	Route::get('keyword/delete/{id}', 'KeywordController@delete');
-	Route::get('keyword/first_rank_update', 'KeywordController@first_rank_update')->name('first_rank_update');
-	Route::get('keyword/hash_update', 'KeywordController@hash_update')->name('hash_update'); // 更新关键词hash值
-	Route::post('keyword/rank_update', 'KeywordController@rank_update')->name('rank_update'); // 更新排名
-	Route::get('keyword/query', 'KeywordController@query');
-	Route::get('keyword/export/{type}/{id}', "KeywordController@export"); // 导出excel
-});
+	Route::group(['namespace' => 'Keyword'], function () {
+		// 关键词
+		Route::post('keyword/add', 'KeywordController@add');
+		Route::post('keyword/edit', 'KeywordController@edit');
+		Route::get('keyword/delete/{id}', 'KeywordController@delete');
 
-Route::group([], function () {
+		Route::get('keyword/first_rank_update', 'KeywordController@first_rank_update')->name('first_rank_update');
+		Route::get('keyword/hash_update', 'KeywordController@hash_update')->name('hash_update'); // 更新关键词hash值
+		Route::post('keyword/rank_update', 'KeywordController@rank_update')->name('rank_update'); // 更新排名
+		Route::get('keyword/query', 'KeywordController@query');
+		Route::get('keyword/export/{type}/{id}', "KeywordController@export"); // 导出excel
+
+		// 关键词排名
+		Route::get('keyword/ranks/{id}', 'RankController@ranks')->name('keyword-ranks'); // 项目详情页
+		Route::get('keyword/rank/delete/{id}', 'RankController@del')->name('keyword-rank-delete'); // 项目详情页
+	});
+
 	// 云网客
 	Route::group(['namespace' => 'Yunwangke'], function () {
 		// 项目
@@ -151,6 +124,40 @@ Route::group([], function () {
 	// 任务
 	Route::group(['namespace' => 'Task'], function () {
 		Route::post('task/wordrank/add_task', 'WordTaskController@add_task')->name('admin_wordrank_task_add'); // 添加任务
+	});
+
+	// 站点
+	Route::group(['namespace' => 'Site'], function () {
+		Route::get('admin/website', 'SiteController@index');
+		Route::get('admin/website/all', 'SiteController@all');
+		Route::post('admin/website/add', 'SiteController@add');
+		Route::post('admin/website/edit', 'SiteController@edit');
+		Route::get('admin/website/delete/{id}', 'SiteController@del');
+
+		// 友情链接 项目
+		Route::get('admin/website/friend', 'FriendController@friend');
+		Route::post('admin/website/friend/add', 'FriendController@add');
+		Route::post('admin/website/friend/edit/{id}', 'FriendController@edit');
+		Route::get('admin/website/friend/delete/{id}', 'FriendController@delete');
+		Route::get('admin/website/friend/info/{id}', 'FriendController@info');
+
+		// 友情链接 链接
+		Route::get('admin/website/friend_link/list/{id}', 'FriendLinkController@list')->name('friend_link_list'); // 友情链接列表
+		Route::get('admin/website/friend_link/info/{id}', 'FriendLinkController@info')->name('friend_link_info');
+		Route::post('admin/website/friend_link/add', 'FriendLinkController@add')->name('friend_link_add');
+		Route::post('admin/website/friend_link/add_multiple', 'FriendLinkController@add_multiple')->name('friend_link_add_multiple');
+		Route::post('admin/website/friend_link/edit/{id}', 'FriendLinkController@edit')->name('friend_link_edit');
+		Route::post('admin/website/friend_link/sync_success', 'FriendLinkController@sync_success')->name('friend_link_sync_success');
+		Route::get('admin/website/friend_link/delete/{id}', 'FriendLinkController@delete')->name('friend_link_delete');
+
+		// 友情链接 同步
+		Route::post('admin/website/friend_remote/sync', 'RemoteController@sync'); // 同步所有
+		Route::post('admin/website/friend_remote/update', 'RemoteController@update'); // 更改链接
+		Route::get('admin/website/friend_remote/delete/{id}', 'RemoteController@delete'); // 更改链接
+		Route::post('admin/website/friend_remote/install/{id}', 'RemoteController@install'); // 安装
+		Route::get('admin/website/friend_remote/test/{id}', 'RemoteController@test'); // 请求站点
+		Route::get('admin/website/friend_remote/config_get/{id}', 'RemoteController@config_get'); // 获取config
+		Route::post('admin/website/friend_remote/style_set/{id}', 'RemoteController@style_set'); // 请求站点
 	});
 });
 
