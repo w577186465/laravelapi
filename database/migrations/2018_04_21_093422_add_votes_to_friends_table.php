@@ -13,6 +13,7 @@ class AddVotesToFriendsTable extends Migration {
 	public function up() {
 		Schema::table('friends', function (Blueprint $table) {
 			$table->string("name")->index();
+			$table->softDeletes();
 		});
 	}
 
@@ -23,7 +24,7 @@ class AddVotesToFriendsTable extends Migration {
 	 */
 	public function down() {
 		Schema::table('friends', function (Blueprint $table) {
-			$table->dropColumn(['name']);
+			$table->dropColumn(['name', 'deleted_at']);
 		});
 	}
 }
