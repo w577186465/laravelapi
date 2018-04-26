@@ -113,12 +113,16 @@ Route::group([], function () {
 		Route::get('yunwangke/list', 'ProjectController@list')->name('yunwangke-project-list'); // 项目列表
 		Route::get('yunwangke/info/{id}', 'ProjectController@info')->name('yunwangke-project-info'); // 项目信息
 		Route::get('yunwangke/single/{id}', 'ProjectController@single')->name('yunwangke-project-single'); // 项目详情页
+		Route::post('yunwangke/save_data/{id}', 'ProjectController@save_data')->name('yunwangke-project-savedata');
+
+		// 文章
+		Route::get('yunwangke/article/list', 'ArticleController@list')->name('yunwangke-article-list');
 
 		// 合作网站
 		Route::get('yunwangke/partner/list', 'PartnerController@list')->name('yunwangke-partner-list'); // 合作网站列表
 		Route::post('yunwangke/partner/add', 'PartnerController@add')->name('yunwangke-partner-add'); // 添加合作网站
 		Route::post('yunwangke/partner/edit/{id}', 'PartnerController@edit')->name('yunwangke-partner-edit'); // 修改合作网站
-		Route::get('yunwangke/partner/delete/{id}', 'PartnerController@delete')->name('yunwangke-partner-delete'); //
+		Route::get('yunwangke/partner/delete/{id}', 'PartnerController@delete')->name('yunwangke-partner-delete');
 	});
 
 	// 任务

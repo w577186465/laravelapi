@@ -8,7 +8,31 @@ use App\Yunwangke as Model;
 use App\YunwangkeData;
 use Illuminate\Http\Request;
 
-class ProjectController extends ApiController {
+class ArticleController extends ApiController {
+
+	public function list(Request $req) {
+		$pagesize = $req->input('pagesize', 15);
+
+		$data = Model::with('custom')->orderBy('id', 'desc')->paginate($pagesize);
+
+		return $this->success($data);
+	}
+
+	// 保存cookie
+	public function save_cooke(Request $req, $id) {
+		if (!$req->filled("cookie")) {
+			return $this->failed("参数不正确");
+		}
+		$ywk = YunwangkeData::firstOrCreate(["yunwangke_id" => $id]);
+
+		$ywk->cookies = $req->input("cookie");
+		$res = $ywk->save();
+		if ($res) {
+			return $this->message("success");
+		}
+		return $this->failed("发生未知错误，保存失败。");
+	}
+
 	// 添加数据
 	public function add(Request $req) {
 		if (!$req->filled('username') || !$req->filled('password') || !$req->filled('ywkid') || !$req->filled('customid')) {
@@ -34,10 +58,6 @@ class ProjectController extends ApiController {
 		$model->case = $req->input('case', false);
 
 		$res = $model->save();
-
-		$data = new YunwangkeData;
-		$data->yunwangke_id = $model->id;
-		$res = $data->save();
 
 		if ($res) {
 			return $this->success('添加成功');
@@ -81,41 +101,6 @@ class ProjectController extends ApiController {
 		}
 
 		return $this->failed('修改失败，发生未知错误。');
-	}
-
-	// 保存副表
-	public function save_data(Request $req, $id) {
-
-		$projects = Model::get();
-		foreach ($projects as $value) {
-			$data = new YunwangkeData;
-			$data->yunwangke_id = $value->id;
-			$data->save();
-		}
-
-		return;
-		$data = $req->only(["cookies"]);
-		if (empty($data)) {
-			return $this->failed("参数不正确");
-		}
-
-		$model = new YunwangkeData;
-		$model->yunwangke_id = $id;
-		$model->cookies = $data["cookies"];
-		$res = $model->save();
-		if ($res) {
-			return $this->message("success");
-		}
-
-		return $this->failed("发生未知错误，保存失败。");
-	}
-
-	public function list(Request $req) {
-		$pagesize = $req->input('pagesize', 15);
-
-		$data = Model::with('custom')->orderBy('id', 'desc')->paginate($pagesize);
-
-		return $this->success($data);
 	}
 
 	public function del($id) {
