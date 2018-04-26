@@ -85,15 +85,6 @@ class ProjectController extends ApiController {
 
 	// 保存副表
 	public function save_data(Request $req, $id) {
-
-		$projects = Model::get();
-		foreach ($projects as $value) {
-			$data = new YunwangkeData;
-			$data->yunwangke_id = $value->id;
-			$data->save();
-		}
-
-		return;
 		$data = $req->only(["cookies"]);
 		if (empty($data)) {
 			return $this->failed("参数不正确");
