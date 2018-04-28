@@ -11,21 +11,27 @@ use Illuminate\Http\Request;
 class ProjectController extends ApiController {
 	// 添加数据
 	public function add(Request $req) {
-		if (!$req->filled('username') || !$req->filled('password') || !$req->filled('ywkid') || !$req->filled('customid')) {
+		if (!$req->filled('name') || !$req->filled('username') || !$req->filled('password') || !$req->filled('ywkid') || !$req->filled('customid')) {
 			return $this->failed('请正确填写信息');
 		}
 
+		$name = $req->input('name');
 		$username = $req->input('username'); // 用户名
 		$ywkid = $req->input('ywkid'); // 云网客id
 
-		$find = Model::where('ywkid', $ywkid)->count();
-		if ($find > 0) {
+		$has_ywkid = Model::where('ywkid', $ywkid)->first();
+		if (!is_null($has_ywkid)) {
 			return $this->failed('云网客id已存在');
 		}
 
-		$model = new Model;
+		$has_name = Model::where('name', $name)->first();
+		if (!is_null($has_name)) {
+			return $this->failed('项目名称已存在');
+		}
 
+		$model = new Model;
 		// 保存
+		$model->name = $name;
 		$model->username = $req->input('username');
 		$model->password = $req->input('password');
 		$model->ywkid = $req->input('ywkid');
@@ -33,11 +39,8 @@ class ProjectController extends ApiController {
 		$model->industry = $req->input('industry');
 		$model->case = $req->input('case', false);
 
-		$res = $model->save();
-
-		$data = new YunwangkeData;
-		$data->yunwangke_id = $model->id;
-		$res = $data->save();
+		$model->save();
+		$res = $this->create_data($model->id);
 
 		if ($res) {
 			return $this->success('添加成功');
@@ -47,53 +50,66 @@ class ProjectController extends ApiController {
 	}
 
 	// 修改
-	public function edit(Request $req) {
-		if (!$req->filled(['id', 'username', 'password', 'ywkid', 'customid'])) {
-			return $this->failed('请正确填写信息');
+	public function edit(Request $req, $id) {
+		$data = $req->only("name", "industry", "username", "password", "ywkid", "customid", "case");
+		if (empty($data)) {
+			return $this->failed("参数不正确");
 		}
 
-		$id = $req->input('id');
-		$ywkid = $req->input('ywkid'); // 云网客id
-
-		$find = Model::where('id', '<>', $id)->where('ywkid', $ywkid)->count();
-		if ($find > 0) {
+		$has_ywkid = Model::where('id', '<>', $id)->where('ywkid', $data['ywkid'])->first();
+		if (!is_null($has_ywkid)) {
 			return $this->failed('云网客id已存在');
+		}
+
+		$has_name = Model::where('id', '<>', $id)->where('name', $data["name"])->first();
+		if (!is_null($has_name)) {
+			return $this->failed('项目名称已存在');
 		}
 
 		$model = Model::find($id);
 
-		if (empty($model)) {
+		if (is_null($model)) {
 			return $this->failed('该项目不存在。');
 		}
 
 		// 保存
-		$model->username = $req->input('username');
-		$model->password = $req->input('password');
-		$model->ywkid = $ywkid;
-		$model->customid = $req->input('customid');
-		$model->industry = $req->input('industry');
-		$model->case = $req->input('case', false);
+		foreach ($data as $key => $value) {
+			$model->$key = $value;
+		}
 
 		$res = $model->save();
 
 		if ($res) {
-			return $this->success('success');
+			return $this->message('success');
 		}
 
 		return $this->failed('修改失败，发生未知错误。');
 	}
 
-	// 保存副表
-	public function save_data(Request $req, $id) {
-		$data = $req->only(["cookies"]);
-		if (empty($data)) {
-			return $this->failed("参数不正确");
-		}
-
+	// 创建副表
+	private function create_data($id, $data = []) {
 		$model = new YunwangkeData;
 		$model->yunwangke_id = $id;
-		$model->cookies = $data["cookies"];
+		foreach ($data as $key => $value) {
+			$model->$key = $value;
+		}
 		$res = $model->save();
+		return $res;
+	}
+
+	// 保存副表
+	public function save_data(Request $req, $id) {
+		$find = YunwangkeData::where("yunwangke_id", $id)->first();
+		$data = $req->only(["cookies"]);
+		if (is_null($find)) {
+			$res = $this->create_data($id, $data);
+			if ($res) {
+				return $this->message("success");
+			}
+			return $this->failed("发生未知错误，保存失败。");
+		}
+
+		$res = YunwangkeData::where("yunwangke_id", $id)->update($data);
 		if ($res) {
 			return $this->message("success");
 		}
@@ -110,9 +126,14 @@ class ProjectController extends ApiController {
 	}
 
 	public function del($id) {
-		$res = Keyword::where('parent', $id)->delete();
-		if (!$res) {
-			return $this->failed('发生未知错误，删除失败。');
+		$keyword = Keyword::where('parent', $id)->first();
+
+		// 判断是否有关键词
+		if (!is_null($keyword)) {
+			$res = Keyword::where('parent', $id)->delete(); // 有则删除
+			if (!$res) {
+				return $this->failed('发生未知错误，删除失败。');
+			}
 		}
 
 		$res = Model::destroy($id);
