@@ -108,11 +108,6 @@ class WordTaskController extends ApiController {
 
 			// 保存排名信息
 			if ($getrank) {
-				// 排名相同跳过
-				if ($rank["Rank"] == $getrank->rank) {
-					continue;
-				}
-
 				$rank["rankchange"] = $getrank->rank - $rank["Rank"];
 				Rank::where("hash", $hash)->update($rank);
 			} else {
