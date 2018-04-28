@@ -104,8 +104,8 @@ Route::group([], function () {
 		// Route::get('keyword/export/{type}/{id}', "KeywordController@export"); // 导出excel
 
 		// 关键词排名
-		Route::get('keyword/ranks/{id}', 'RankController@ranks')->name('keyword-ranks'); // 项目详情页
-		Route::get('keyword/rank/delete/{id}', 'RankController@del')->name('keyword-rank-delete'); // 项目详情页
+		Route::get('admin/keyword/ranks/{id}', 'RankController@ranks')->name('keyword-ranks'); // 项目详情页
+		Route::get('admin/keyword/rank/delete/{id}', 'RankController@del')->name('keyword-rank-delete'); // 项目详情页
 	});
 
 	// 云网客
