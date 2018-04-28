@@ -70,7 +70,7 @@ class RankController extends ApiController {
 		}
 
 		// 保存第一排名索引
-		if ($minRank > $rankData[0]["Rank"] || $minRank != 0) {
+		if ($minRank > $rankData[0]["Rank"] || $minRank == 0) {
 			$columnName = "first_rank_" . $data["site"]; // 获取索引列名
 			$kwmodel = Keyword::find($data["id"]);
 			$kwmodel->$columnName = $rankData[0]["Rank"];
