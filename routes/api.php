@@ -55,8 +55,12 @@ Route::middleware([])->group(function () {
 	Route::group(['namespace' => 'Task'], function () {
 		Route::get('tool/task/wordrank/rank', 'WordTaskController@rank')->name('word_task_rank'); // 获取进行中的任务
 		Route::get('tool/task/wordrank/data/{id}', 'WordTaskController@get_task_data')->name('word_task_data'); // 获取任务关键词
-		Route::post('tool/task/wordrank/saverank', 'WordTaskController@save_rank')->name('word_task_save_rank'); // 获取任务关键词
 		Route::get('tool/task/wordrank/task_state/{id}', 'WordTaskController@task_state')->name('word_set_task_state'); // 任务完成更新状态
+	});
+
+	// 关键词
+	Route::group(['namespace' => 'Keyword'], function () {
+		Route::post('tool/keyword/rank/saverank', 'RankController@save_rank')->name('word_task_save_rank'); // 获取任务关键词
 	});
 });
 

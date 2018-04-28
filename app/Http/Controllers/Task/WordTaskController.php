@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Task;
 use App\Http\Controllers\ApiController;
 use App\Http\Resources\RankqueryGettask;
 use App\Http\Resources\WordTaskKeywords;
-use App\Keyword;
 use App\Rank;
 use App\WordTask;
 use App\Yunwangke;
@@ -86,51 +85,6 @@ class WordTaskController extends ApiController {
 		$data["keywords"] = WordTaskKeywords::collection($task->keywords);
 		$data["info"] = $info;
 		return $this->success($data);
-	}
-
-	public function save_rank(Request $req) {
-		if (!$req->filled(["id", "site", "rank"])) {
-			return $this->failed("参数不正确");
-		}
-
-		$data = $req->only(["id", "site", "rank"]);
-
-		$rankData = $data["rank"]; // 排名信息
-		$keyword = Keyword::find($data["id"]); // 获取关键词信息
-
-		if (empty($rankData)) {
-			return $this->failed("排名数据不能为空");
-		}
-
-		foreach ($rankData as $key => $rank) {
-			$hash = md5($data["id"] . $rank["Url"]); // 生成排名标识
-			$getrank = Rank::where("hash", $hash)->first(); // 旧的排名信息
-
-			// 保存排名信息
-			if ($getrank) {
-				$rank["rankchange"] = $getrank->rank - $rank["Rank"];
-				Rank::where("hash", $hash)->update($rank);
-			} else {
-				$newrank = new Rank;
-				$newrank->keyword_id = $data["id"];
-				$newrank->keyword = $keyword->keyword;
-				$newrank->site = $data["site"];
-				$newrank->rank = $rank["Rank"];
-				$newrank->url = $rank["Url"];
-				$newrank->hash = $hash;
-				$newrank->save();
-			}
-		}
-
-		// 保存第一排名索引
-		$columnName = "first_rank_" . $data["site"]; // 获取索引列名
-		$kwmodel = Keyword::find($data["id"]);
-		if ($kwmodel->$columnName != $rankData[0]["Rank"]) {
-			$kwmodel->$columnName = $rankData[0]["Rank"];
-			$kwmodel->save();
-		}
-
-		return $this->message("message");
 	}
 
 	// 设置任务状态
