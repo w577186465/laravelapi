@@ -35,10 +35,13 @@ class RankController extends ApiController {
 		// 获取原始排名信息
 		$rankData = $data["rank"]; // 排名信息
 		$keyword = Keyword::find($data["id"]); // 获取关键词信息
+		if (!$keyword) {
+			return $this->failed("关键词不存在");
+		}
 		$oldRank = Rank::where("keyword_id", $data["id"])->where("site", $data["site"])->orderBy("rank", "asc")->get(); // 获取原始排名信息
 
 		$minRank = 0;
-		if (!empty($oldRank)) {
+		if (!$oldRank->isEmpty()) {
 			$minRank = $oldRank[0]->rank;
 		}
 
