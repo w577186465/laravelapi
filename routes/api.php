@@ -180,10 +180,15 @@ Route::group([], function () {
 	});
 });
 
+// 开放接口
+Route::group([], function () {
+	Route::group(['namespace' => 'Site'], function () {
+		Route::get('website/friend_link/all/{id}', 'FriendLinkController@all')->name('friend_link_all'); // 友情链接获取全部链接
+	});
+});
+
 // 后台不需登录信息
 Route::group(['namespace' => 'Admin'], function () {
-	Route::get('admin/website/friend_link/all/{id}', 'Site\FriendLinkController@all')->name('friend_link_all'); // 友情链接获取全部链接
-
 	Route::get('miniprograms', 'Miniprograms\ModulesController@list');
 	Route::get('miniprograms/selects', 'Miniprograms\ModulesController@selects');
 	Route::get('miniprograms/{id}', 'Miniprograms\ModulesController@single'); // 获取单个应用数据

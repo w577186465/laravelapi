@@ -181,6 +181,10 @@ class ProjectController extends ApiController {
 			if ($rank == 'b50') {
 				$query->where($rank_column, 0);
 			}
+
+			if ($rank == 'f10' || $rank == 'f50') {
+				$query->where($rank_column, '>', 0);
+			}
 		})
 			->orderBy('heart', 'desc')
 			->orderBy($orderColumn, $order)
